@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 
 import com.google.android.gms.vision.face.Face;
 
@@ -60,6 +61,9 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private float mFaceHappiness;
 
     private Context thisContext;
+
+    private Integer detectionCount = 0;
+    private Float happiness = 0f;
 
     FaceGraphic(GraphicOverlay overlay, Context context) {
         super(overlay);
@@ -114,13 +118,33 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         canvas.drawText("right eye: " + String.format("%.2f", face.getIsRightEyeOpenProbability()), x + ID_X_OFFSET * 2, y + ID_Y_OFFSET * 2, mIdPaint);
         canvas.drawText("left eye: " + String.format("%.2f", face.getIsLeftEyeOpenProbability()), x - ID_X_OFFSET*2, y - ID_Y_OFFSET*2, mIdPaint);
 
-        if (face.getIsSmilingProbability() > 0.2) {
-            Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory() + "/happyMusic/");
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(selectedUri, "resource/folder");
-            intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-            thisContext.startActivity(intent);
+        if (happiness>=0) {
+            happiness += face.getIsSmilingProbability();
+            detectionCount++;
         }
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                /*Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory() + "/happyMusic/");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(selectedUri, "resource/folder");
+                intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+                thisContext.startActivity(intent);*/
+                if (happiness/detectionCount < 0.2) {
+                    Intent intent = new Intent(thisContext, FixActivity.class);
+                    intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+                    thisContext.startActivity(intent);
+                } else {
+                    Intent intent = new Intent(thisContext, OkActivity.class);
+                    intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+                    thisContext.startActivity(intent);
+                }
+                handler.removeCallbacks(this);
+            }
+        }, 3000);
 
         // Draws a bounding box around the face.
         float xOffset = scaleX(face.getWidth() / 2.0f);
