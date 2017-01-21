@@ -15,13 +15,19 @@
  */
 package eu.makemehappy.makemehappy;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
+import android.os.Environment;
 
 import com.google.android.gms.vision.face.Face;
 
 import eu.makemehappy.makemehappy.camera.GraphicOverlay;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * Graphic instance for rendering face position, orientation, and landmarks within an associated
@@ -53,8 +59,11 @@ class FaceGraphic extends GraphicOverlay.Graphic {
     private int mFaceId;
     private float mFaceHappiness;
 
-    FaceGraphic(GraphicOverlay overlay) {
+    private Context thisContext;
+
+    FaceGraphic(GraphicOverlay overlay, Context context) {
         super(overlay);
+        thisContext = context;
 
         mCurrentColorIndex = (mCurrentColorIndex + 1) % COLOR_CHOICES.length;
         final int selectedColor = COLOR_CHOICES[mCurrentColorIndex];
@@ -104,6 +113,14 @@ class FaceGraphic extends GraphicOverlay.Graphic {
         canvas.drawText("happiness: " + String.format("%.2f", face.getIsSmilingProbability()), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
         canvas.drawText("right eye: " + String.format("%.2f", face.getIsRightEyeOpenProbability()), x + ID_X_OFFSET * 2, y + ID_Y_OFFSET * 2, mIdPaint);
         canvas.drawText("left eye: " + String.format("%.2f", face.getIsLeftEyeOpenProbability()), x - ID_X_OFFSET*2, y - ID_Y_OFFSET*2, mIdPaint);
+
+        if (face.getIsSmilingProbability() > 0.2) {
+            Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory() + "/happyMusic/");
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(selectedUri, "resource/folder");
+            intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+            thisContext.startActivity(intent);
+        }
 
         // Draws a bounding box around the face.
         float xOffset = scaleX(face.getWidth() / 2.0f);
