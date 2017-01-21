@@ -144,7 +144,7 @@ class FaceGraphic extends GraphicOverlay.Graphic {
                 }
                 handler.removeCallbacks(this);
             }
-        }, 3000);
+        }, 2000);
 
         // Draws a bounding box around the face.
         float xOffset = scaleX(face.getWidth() / 2.0f);

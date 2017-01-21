@@ -20,17 +20,6 @@ public class FixActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fix);
-
-        TextView happiness = (TextView)findViewById(R.id.textView);
-        Float happinessValue;
-
-        Bundle extras = getIntent().getExtras();
-        if(extras == null) {
-            happinessValue =  null;
-        } else {
-            happinessValue = extras.getFloat("happiness");
-            happiness.setText(String.valueOf(happinessValue));
-        }
     }
 
     public void getFix(View view) {
