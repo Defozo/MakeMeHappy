@@ -1,0 +1,38 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+    defaultConfig {
+        applicationId "eu.makemehappy.makemehappy"
+        minSdkVersion 18
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        generatedDensities = []
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    // This is handled for you by the 2.0+ Gradle Plugin
+    aaptOptions {
+        additionalParameters "--no-version-vectors"
+    }
+}
+
+
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.android.support:design:24.2.0'
+    compile 'com.google.android.gms:play-services-vision:9.4.0+'
+}
